@@ -3,11 +3,11 @@ import java.util.HashMap;
 // Acessible books for now
 public class Library {
   
-  private int page; // Page accessed in xml file
+  private int page; // Page accessed in Library
   private int pageSize; // Number of books per page
   private HashMap<String, Book> library; // List of books, with name as key, for search purposes
   private ExcelMask em; // File accessed by library
-  private int size = 200; // Max library size before reaccess xml file
+  private int size = 200; // Max library size before reaccess xlsx file
 
   // Constructor
   public Library(ExcelMask em){
@@ -24,7 +24,7 @@ public class Library {
     return true;
   }
 
-  // Search book in library and, if not found, searches xml file
+  // Search book in library and, if not found, searches xlsx file
   public Book searchBook(String name){
     Book res = library.get(name);
     if(res != null) return res;
@@ -34,7 +34,7 @@ public class Library {
     }else return null;
   }
 
-  // Gets new Books from xml file and repopulates library
+  // Gets new Books from xlsx file and repopulates library
   public void renovateLibrary(Book[] newBooks){
     this.clearLibrary();
     for(Book b: newBooks){

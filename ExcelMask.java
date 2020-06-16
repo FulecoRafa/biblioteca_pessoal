@@ -7,7 +7,7 @@ public class ExcelMask {
     // Open xml file with fileName
   }
 
-  // Gets 'size' books of xml file starting from 'rrn' entry
+  // Gets 'size' books of xlsx file starting from 'rrn' entry
   public Book[] getBooks(int rrn, int size){
     
   }
@@ -18,7 +18,7 @@ public class ExcelMask {
 
   }
 
-  // Closes xml file
+  // Closes xlsx file
   public boolean close(){
 
   }
