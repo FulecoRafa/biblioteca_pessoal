@@ -1,28 +1,13 @@
 // Encapsulate Book object
 public class Book{
 
-  enum book_t{
-    FISICO("físico"),
-    ONLINE("online");
-
-    private String type_name;
-
-    book_t(String type_name){
-      this.type_name = type_name;
-    }
-
-    public String toString(){
-      return this.type_name;
-    }
-  };
-
   public String name;
   public String author;
   public String publish;
   public String description;
   public int collection;
   public book_t type;
-  public float rate;
+  public int rate;
   public boolean bought;
   public boolean read;
 
@@ -32,7 +17,7 @@ public class Book{
                String publish,
                String description,
                book_t type,
-               float rate,
+               int rate,
                boolean bought,
                boolean read){
                 this.name = name;
@@ -50,7 +35,7 @@ public class Book{
                String publish,
                String description,
                book_t type,
-               float rate,
+               int rate,
                boolean bought){
                 this.name = name;
                 this.author = author;
@@ -67,7 +52,7 @@ public class Book{
                String publish,
                String description,
                book_t type,
-               float rate){
+               int rate){
                 this.name = name;
                 this.author = author;
                 this.publish = publish;
@@ -91,5 +76,9 @@ public class Book{
                 this.rate = -1;
                 this.bought = false;
                 this.read = false;
+  }
+
+  public String toString(){
+    return String.format("%s\n%s -> %s\n%s %d\nRead: %s   Bought: %s\n%s\n", this.name, this.author, this.publish, this.type.toString(), this.rate, (this.read)? "✔": "X", (this.bought)? "✔": "X", this.description);
   }
 }

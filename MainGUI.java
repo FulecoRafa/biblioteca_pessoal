@@ -125,7 +125,7 @@ public class MainGUI extends JFrame implements ActionListener{
   }
 
   public void render(){
-    this.setSize(800, 600);
+    this.setSize(1000, 800);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setVisible(true);
   }
