@@ -5,7 +5,6 @@ public class Book{
   public String author;
   public String publish;
   public String description;
-  public int collection;
   public book_t type;
   public int rate;
   public boolean bought;

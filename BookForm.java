@@ -143,7 +143,6 @@ public class BookForm extends JDialog implements ActionListener, ChangeListener{
   public void actionPerformed(ActionEvent e) {
     // Book type
     if(book_t.FISICO.toString().equals(e.getActionCommand()) || book_t.ONLINE.toString().equals(e.getActionCommand())){
-      System.out.println(e.getActionCommand());
       return;
     }
     // Check Boxes
@@ -164,7 +163,6 @@ public class BookForm extends JDialog implements ActionListener, ChangeListener{
         return;
       }
       this.referBook = new Book(this.fields[0].getText(), this.fields[1].getText(), this.fields[2].getText(), this.description.getText(), this.bookType, this.bookGrade, this.bookRead, this.bookBought);
-      System.out.println(this.referBook.toString());
     }else{
       int input = JOptionPane.showConfirmDialog(null, "Todas as alterações serão descartadas, deseja mesmo continuar?", "Excluindo progresso...", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
       if(input == 1) return;
@@ -175,6 +173,5 @@ public class BookForm extends JDialog implements ActionListener, ChangeListener{
   @Override
   public void stateChanged(ChangeEvent e) {
     this.bookGrade = ((JSlider)e.getSource()).getValue();
-    System.out.println(this.bookGrade);
   }
 }

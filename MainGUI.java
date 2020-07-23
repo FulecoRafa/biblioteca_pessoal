@@ -6,26 +6,44 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.BorderFactory;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.util.Scanner;
+import java.util.Iterator;
+import java.util.Vector;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 // Sets main menu GUI
 public class MainGUI extends JFrame implements ActionListener{
 
-  MainGUI(){
+  private ExcelManager Excel;
+  private Vector<Book> books;
+  private int page = 0;
+
+  MainGUI(ExcelManager EM){
     super("Biblioteca Pessoal");
     this.setLayout(new GridLayout(2, 1));
+    
+    this.Excel = EM;
+    this.books = EM.obtainBookBlock(this.page);
+
+    this.addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+        Excel.shutDown();
+      }
+    });
 
     // Menu bar
     JMenuBar menu = new JMenuBar();
@@ -74,19 +92,40 @@ public class MainGUI extends JFrame implements ActionListener{
     // Adding components
     top.add(searchBar);
     top.add(searchButton);
+    
+    // Bottom items
+    JPanel bottom = new JPanel();
+    JScrollPane sp = new JScrollPane(bottom, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+    bottom.setLayout(new GridLayout(0,1));
+    bottom.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 300));
+    
+    bottom.add(new BookTile(new Book("Harry Potter", "JK Rowling", "Editora Panini", "A história de dois aventureiros, o tigre Evan e a raposa Amélia, no início de sua jornada mundo afora em busca do lar perfeito.", book_t.FISICO, 2, true, false), 15, bottom.getWidth()));
+    // Iterator<Book> it = this.books.iterator();
+    // while(it.hasNext()){
+      //   bottom.add(new BookTile(it.next()));
+      // }
+      
+    bottom.setAlignmentY(java.awt.Component.CENTER_ALIGNMENT);
 
     // Adding parts
     this.setJMenuBar(menu);
     this.add(top);
+    this.add(sp);
   }
   
   @Override
   public void actionPerformed(ActionEvent e) {
     if("close".equals(e.getActionCommand())){
+      this.Excel.shutDown();
       System.exit(0);
     }else if("addBook".equals(e.getActionCommand())){
       BookForm bf = new BookForm("Novo livro");
       bf.render();
+      Vector<Book> vec = new Vector<Book>();
+      System.out.println("Vec created");
+      vec.add(bf.getBook());
+      Excel.insertBooks(vec);
     }else if("exportXLSX".equals(e.getActionCommand())){
 
       JFileChooser fc = new JFileChooser();
@@ -128,6 +167,13 @@ public class MainGUI extends JFrame implements ActionListener{
     this.setSize(1000, 800);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setVisible(true);
+  }
+
+  private void updateBooks(int page){
+    Vector<Book> temp = Excel.obtainBookBlock(page);
+    if(temp.size() < 1) return;
+    this.page = page;
+    this.books = temp;
   }
 
 }
