@@ -16,10 +16,14 @@ import java.util.Vector;
 public class BookTile extends JPanel implements ActionListener {
 
   private Book book;
+  private ExcelManager em;
+  private int index;
 
   // Registers book to be shown in tile
-  public BookTile(Book b, int h, int w) {
+  public BookTile(Book b, ExcelManager em, int h, int w, int index) {
     this.book = b;
+    this.em = em;
+    this.index = index;
     this.setLayout(new GridLayout(3, 2));
     w+=20;
     this.setPreferredSize(new Dimension(w, h));
@@ -80,13 +84,15 @@ public class BookTile extends JPanel implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     if("erase".equals(e.getActionCommand())){
       int input = JOptionPane.showConfirmDialog(null, "Todas as informações do livro serão deletadas definitivamente, tem certeza que deseja continuar?", "Deletar livro", JOptionPane.YES_NO_OPTION);
-      if(input == 1)return;
+      if(input != 0)return;
       System.out.println("Deletando");
-      // TODO Delete function here
+      em.doDelete(this.index);
     }else if("edit".equals(e.getActionCommand())){
       BookForm bf = new BookForm("Editar livro");
       bf.setBook(book);
       bf.render();
+      Book updatedBook = bf.getBook();
+      em.callBack(updatedBook, index);
     }
 
   }

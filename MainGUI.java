@@ -30,6 +30,8 @@ public class MainGUI extends JFrame implements ActionListener{
 
   private ExcelManager Excel;
   private Vector<Book> books;
+  private JTextField searchBar;
+  private JPanel bottom;
   private int page = 0;
 
   MainGUI(ExcelManager EM){
@@ -81,32 +83,35 @@ public class MainGUI extends JFrame implements ActionListener{
     top.add(title);
 
     // Search bar
-    JTextField searchBar = new JTextField();
-    searchBar.setFont(searchBar.getFont().deriveFont(20.0f));
-    searchBar.setPreferredSize(new Dimension(200, 20)); // Setting text area dimensions
+    this.searchBar = new JTextField();
+    this.searchBar.setFont(searchBar.getFont().deriveFont(20.0f));
+    this.searchBar.setPreferredSize(new Dimension(200, 20)); // Setting text area dimensions
 
     // Search button
     JButton searchButton = new JButton("Procurar");
     searchButton.setFont(searchButton.getFont().deriveFont(20.0f));
+    searchButton.addActionListener(this);
+    searchButton.setActionCommand("search");
 
     // Adding components
     top.add(searchBar);
     top.add(searchButton);
     
     // Bottom items
-    JPanel bottom = new JPanel();
+    this.bottom = new JPanel();
     JScrollPane sp = new JScrollPane(bottom, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-    bottom.setLayout(new GridLayout(0, 1, 0, 0));
-    bottom.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+    this.bottom.setLayout(new GridLayout(0, 1, 0, 0));
+    this.bottom.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
     
-    bottom.add(new BookTile(new Book("Harry Potter", "JK Rowling", "Editora Panini", "A história de dois aventureiros, o tigre Evan e a raposa Amélia, no início de sua jornada mundo afora em busca do lar perfeito.", book_t.FISICO, 2, true, false), 5, bottom.getWidth()));
+    this.bottom.add(new BookTile(new Book("Harry Potter", "JK Rowling", "Editora Panini", "A história de dois aventureiros, o tigre Evan e a raposa Amélia, no início de sua jornada mundo afora em busca do lar perfeito.", book_t.FISICO, 2, true, false), EM, 5, bottom.getWidth(), 1));
     // Iterator<Book> it = this.books.iterator();
+    // int i = 1;
     // while(it.hasNext()){
-      //   bottom.add(new BookTile(it.next()));
-      // }
+    //   this.bottom.add(new BookTile(it.next(), EM, 5, bottom.getWidth(), i++));
+    // }
       
-    bottom.setAlignmentY(java.awt.Component.CENTER_ALIGNMENT);
+    this.bottom.setAlignmentY(java.awt.Component.CENTER_ALIGNMENT);
 
     // Adding parts
     this.setJMenuBar(menu);
@@ -128,6 +133,8 @@ public class MainGUI extends JFrame implements ActionListener{
       Excel.insertBooks(vec);
     }else if("exportXLSX".equals(e.getActionCommand())){
 
+      Excel.shutDown();
+
       JFileChooser fc = new JFileChooser();
       fc.setFileFilter(new FileFilter(){
       
@@ -145,7 +152,7 @@ public class MainGUI extends JFrame implements ActionListener{
       if(fc.showSaveDialog(null) == 0){
         try{
           FileOutputStream fos = new FileOutputStream(fc.getSelectedFile()+".xlsx");
-          File readFile = new File("livros.xlsx");
+          File readFile = new File("Biblioteca.xlsx");
           System.out.println(readFile);
           FileInputStream fileReader = new FileInputStream(readFile);
           byte[] data = fileReader.readAllBytes();
@@ -154,9 +161,13 @@ public class MainGUI extends JFrame implements ActionListener{
           fileReader.close();
         }catch(Exception exc){
           System.out.println("Failed to write file");
+          System.out.println(exc);
         }
       }
 
+      Excel = new ExcelManager();
+    }else if("search".equals(e.getActionCommand())){
+      Excel.research(this.searchBar.getText(), 0);
     }else{
       System.out.println("Listened to: " + e.getActionCommand());
     }
@@ -169,7 +180,7 @@ public class MainGUI extends JFrame implements ActionListener{
     this.setVisible(true);
   }
 
-  private void updateBooks(int page){
+  private void updateBooksByPage(int page){
     Vector<Book> temp = Excel.obtainBookBlock(page);
     if(temp.size() < 1) return;
     this.page = page;

@@ -163,25 +163,6 @@ public class FontManager {
 	    return set;
 	}
 	
-	//	Condition cells
-	public CellStyle condStyle(XSSFWorkbook workbook, boolean status, boolean read) {
-		CellStyle set = procedure(workbook, status, read);
-
-		//	Display text to the center
-		set.setAlignment(HorizontalAlignment.CENTER);
-		
-		if(read) {
-			font.setColor(IndexedColors.GREEN.getIndex());
-		} else if(!status) {
-			font.setColor(IndexedColors.GREY_25_PERCENT.getIndex());
-		} else {
-			//font.setColor(IndexedColors.GOLD.getIndex());
-			font.setColor(IndexedColors.RED.getIndex());
-		}
-	        
-	    return set;
-	}
-	
 	//	Type cells
 	public CellStyle typeStyle(XSSFWorkbook workbook, String status) {
 		CellStyle set = procedure(workbook);
@@ -219,6 +200,21 @@ public class FontManager {
 	    }
 		
 	    return set;
+	}
+	
+	//	Empty cells
+	public CellStyle defaultStyle(XSSFWorkbook workbook) {
+		CellStyle set = workbook.createCellStyle();
+		
+		set.setAlignment(HorizontalAlignment.LEFT);
+		set.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		
+		set.setBorderBottom(BorderStyle.NONE);
+		set.setBorderLeft(BorderStyle.NONE);
+		set.setBorderRight(BorderStyle.NONE);
+		set.setBorderTop(BorderStyle.NONE);
+		
+		return set;
 	}
 	
 	//	Creates the box-like borders

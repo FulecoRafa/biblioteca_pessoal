@@ -39,15 +39,15 @@ public class ExcelManager {
 		return set;
 	}
 	
-	//	Open Excel definitive edition??? (Verif.)
+	//	Open Excel definitive edition (Verif.)
 	public ExcelManager() {
 		
 		this.fileName = getFilename();
 		
 		//	This will try opening the file with said name
 		try {
-		workbook = new XSSFWorkbook(new FileInputStream(this.fileName));
-		numSheets = workbook.getNumberOfSheets();
+			workbook = new XSSFWorkbook(new FileInputStream(this.fileName));
+			numSheets = workbook.getNumberOfSheets();
 		
 		} catch (FileNotFoundException e){
 			//	If it doesn't exist, it will create another FROM SCRATCH
@@ -65,7 +65,7 @@ public class ExcelManager {
 		//	Unknown numRows before first run through
 		numRows = 0;
 		numCells = 9;
-		pageSize = 10;
+		pageSize = 3;
 		
 	}
 	
@@ -135,7 +135,7 @@ public class ExcelManager {
 		return;
 	}
 	
-	//	Inserts a book from a VECTOR of books
+	//	Inserts a book from a VECTOR of books (Verif.)
 	public void insertBooks(Vector<Book> b) {
 		Iterator<Book> it = b.iterator();
 		FontManager f = new FontManager(workbook);
@@ -184,6 +184,9 @@ public class ExcelManager {
 					rowNumber--;
 				}
 			} catch(NullPointerException e) {
+				flag = true;
+				rowNumber--;
+			} catch(IllegalStateException e) {
 				flag = true;
 				rowNumber--;
 			}
@@ -263,22 +266,26 @@ public class ExcelManager {
 		return;
 	}
 
-	//	Obtain a page of books, rather than a set number from a certain page
-	Vector<Book> obtainBookBlock(int page) {
+	//	Obtain a page of books, rather than a set number from a certain page (Verif.)
+	public Vector<Book> obtainBookBlock(int page) {
 		return obtainBookBlock(0, pageSize, page);
 	}
 	
-	//	Obtain a set number of books from a certain page
-	Vector<Book> obtainBookBlock(int spos, int epos, int page) {
+	//	Obtain a set number of books from a certain page (Verif.)
+	private Vector<Book> obtainBookBlock(int spos, int epos, int page) {
+    if(page < 0) return new Vector<Book>();
 		int total = epos-spos,
 		    location = (page*pageSize) + 1 +spos;
 		Vector<Book> b = new Vector<Book>();
 		Book re;
 		boolean flag = false;
 		
+		v.clear();
+		
 		//	Loop that obtains a line and processes it into the format of a book
 		for(int count = location; (count < (location + total)) && !flag; count++) {
 			re = obtainLine(count);
+			v.add(count);
 			if(re != null) {
 				b.add(re);
 			} else {
@@ -289,7 +296,7 @@ public class ExcelManager {
 		return b;
 	}
 	
-	//	Obtains one line from the excel file
+	//	Obtains one line from the excel file (Verif.)
 	Book obtainLine(int line) {
 		Book b;
 		String name, author, publish, description, aux;
@@ -301,6 +308,9 @@ public class ExcelManager {
 			cell = row.getCell(0);
 			c = (int) cell.getNumericCellValue();
 		} catch(NullPointerException e) {
+			flag = true;
+			numRows = c;
+		} catch(IllegalStateException e) {
 			flag = true;
 			numRows = c;
 		}
@@ -327,7 +337,7 @@ public class ExcelManager {
 		read = isRead(aux);
 		
 		//	Defines book as physical or online and creates them
-		if((aux = row.getCell(5).getStringCellValue()) == "Físico") {
+		if((aux = row.getCell(5).getStringCellValue()).equals("Físico")) {
 			b = new Book(name, author, publish, description, book_t.FISICO, rate, bought, read);
 		} else {
 			b = new Book(name, author, publish, description, book_t.ONLINE, rate, bought, read);
@@ -339,7 +349,7 @@ public class ExcelManager {
 	
 	//	Returns if a book is bought or not. Used only within class (Verif.)
 	private boolean isBought(String s) {
-		if(s == "Comprado" || s == "Baixado") {
+		if(s.equals("Comprado") || s.equals("Baixado")) {
 			return true;
 		}
 		return false;
@@ -347,123 +357,126 @@ public class ExcelManager {
 	
 	//	Returns if a book is read or not. Used only within class (Verif.)
 	private boolean isRead(String s) {
-		if(s == "Feita") {
+		if(s.equals("Feita")) {
 			return true;
 		}
 		return false;
 	}
 
-	//	Print for debugging (Vector)
-	void debugPrint(Vector<Book> book) {
-		Iterator<Book> it = book.iterator();
-		Book b;
+	/*	Research from excel (Verif.)
+	 *	Field 0: Match book names
+	 *	Field 1: Match author names
+	 *	Field 2: Match publisher names
+	 */
+	public Vector<Book> research(String search, int field) {
+		Vector<Book> endProduct = new Vector<Book>();
+		Book temp;
 		
-		while(it.hasNext()) {
-			b = it.next();
-			
-			System.out.println("Livro: " + b.name);
-			System.out.println("Autor: " + b.author);
-			System.out.println("Publicadora: " + b.publish);
-			System.out.println("Descrição: " + b.description);
-			
-			if(b.type == book_t.FISICO) {
-				System.out.println("Tipo: Físico");
-			} else{
-				System.out.println("Tipo: Online");
-			}
-			
-			System.out.println("Nota: " + b.rate + " estrelas");
-			
-			if(b.bought == true) {
-				System.out.println("Situação: Disponível");
-			} else {
-				System.out.println("Situação: Faltando");
-			}
-			
-			if(b.read == true) {
-				System.out.println("Status: Lido");
-			} else {
-				System.out.println("Status: Não lido");
-			}
-			
-			System.out.printf("\n\n");
-		}
-		
-		return;
-	}
-	
-	//	Research from excel
-	public Vector<Book> research(String search, int field, boolean edit) {
-		Vector<Book> rValue = new Vector<Book>();
-		Book compare;
-		boolean flag = false;
+		//	Prevents previous searches from stacking up
+		v.clear();
 		
 		//	Set pattern for RegEx
 		pattern = Pattern.compile(search, Pattern.CASE_INSENSITIVE);
 		
 		//	Runs through excel file
-		for(int count = 1; !flag; count++) {
-			
-			//	Extracts a book line from excel
-			compare = obtainLine(count);
-			
-			if(compare == null) {
-				return rValue;
-			}
-			
+		for(int count = 1; (temp = obtainLine(count)) != null; count++) {
+					
 			//	According to field, compare said field (can only be 1 or 0, aka book author or book name)
 			switch(field) {
 			case 0:
-				matcher = pattern.matcher(compare.name);
+				matcher = pattern.matcher(temp.name);
 				break;
 			case 1:
-				matcher = pattern.matcher(compare.author);
+				matcher = pattern.matcher(temp.author);
 				break;
 			case 2:
-				matcher = pattern.matcher(compare.publish);
+				matcher = pattern.matcher(temp.publish);
 				break;
 			default:
 				//	Invalid option
 				System.out.println("Opção inválida");
 				return null;
 			}
-			
-			//	If the book is found, then add it to the returning Vector
+					
+			//	If a match is found, then add it up
 			if(matcher.find()) {
-				//	Adds book to Vector
-				rValue.add(compare);
-				
-				if(edit) {
-					//	Adds place of existence
-					v.add(count);
-				}
+				endProduct.add(temp);
+				v.add(count);
 			}
 		}
 		
 		//	Returns Vector with all matches found
-		return rValue;
+		return endProduct;
 	}
 	
-	//	Call this function to edit the book
-	public void callBack(Book edited, int locale) {
+	//	Call this function to edit the book. DO NOT call this if research()/obtainBookBlock() has not been called beforehand (Verif.)
+	public void callBack(Book edited, int pos) {
 		Iterator<Integer> it = v.iterator();
 		int a = 1;
 		
 		//	Obtains placement of change
-		for(int count = 0; count <= locale && it.hasNext(); count++) {
+		for(int count = 1; count <= pos; count++) {
 			a = it.next();
 		}
 		
+		//	Executes the insertion of the edited book
 		row = sheet.getRow(a);
 		insertLine(edited);
 		
+		//	Resets the tracking Vector
 		v.clear();
 		
+		//	End
 		return;
 	}
 	
+	//	Deletes a row. This HAS to be used with one of the book block acquirement functions, otherwise, it won't work correctly (Verif.)
+	public void doDelete(int pos) {
+		Iterator<Integer> it = v.iterator();
+		boolean flag = false;
+		int a = 1;
+		Book shift;
+		
+		//	Adjustment for ease in dev
+		pos--;
+		
+		//		Obtains placement of change
+		for(int count = 0; count <= pos && it.hasNext(); count++) {
+			a = it.next();
+		}
+		
+		//	Deleting position is pos (Important)
+		for(int count = a; !flag; count++) {
+			//	Obtains book
+			shift = obtainLine(count+1);
+			
+			//	If there's nothing else to shift
+			if(shift == null) {
+				flag = true;
+				insertNothing(count);
+			} else {
+				//	Reinserts said book
+				row = sheet.getRow(count);
+				insertLine(shift);
+			}
+		}
+	}
 	
-	
+	//	Inserts an empty row to delete an entry (Verif.)
+	private void insertNothing(int place) {
+		FontManager f = new FontManager(workbook);
+		row = sheet.getRow(place);
+		
+		//	Sets every cell to empty
+		for(int count = 0; count < numCells; count++) {
+			try {
+				cell = row.createCell(count);
+				cell.setCellValue("");
+				cell.setCellStyle(f.defaultStyle(workbook));
+			} catch(NullPointerException e) {
+			}
+		}
+	}
 	
 	
 	
