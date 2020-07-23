@@ -36,10 +36,10 @@ public class MainGUI extends JFrame implements ActionListener{
     super("Biblioteca Pessoal");
     this.setLayout(new GridLayout(2, 1));
     this.setSize(1280, 720);	//Tamanho da janela
-		//this.setTitle("Biblioteca Pessoal");	//Nome da janela
-		this.setLocationRelativeTo(null);	//Abrir centralizada
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//Finalizar quando sair
-		this.setVisible(true);	//Fazer a janela aparecer
+    //this.setTitle("Biblioteca Pessoal");	//Nome da janela
+    this.setLocationRelativeTo(null);	//Abrir centralizada
+    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//Finalizar quando sair
+    this.setVisible(true);	//Fazer a janela aparecer
     
     this.Excel = EM;
     this.books = EM.obtainBookBlock(this.page);
@@ -119,13 +119,13 @@ public class MainGUI extends JFrame implements ActionListener{
     this.add(sp);
 
     JPanel panelButtons = new JPanel();
-		JButton prior = new JButton("<");
-		JButton next = new JButton(">");
+    JButton prior = new JButton("<");
+    JButton next = new JButton(">");
     
-		panelButtons.add(prior);
-		panelButtons.add(next);
+    panelButtons.add(prior);
+    panelButtons.add(next);
     
-		this.add(panelButtons, BorderLayout.SOUTH);
+    this.add(panelButtons, BorderLayout.SOUTH);
   }
   
   @Override
@@ -162,7 +162,7 @@ public class MainGUI extends JFrame implements ActionListener{
           File readFile = new File("livros.xlsx");
           System.out.println(readFile);
           FileInputStream fileReader = new FileInputStream(readFile);
-          byte[] data = fileReader.readAllBytes();
+          byte[] data = Files.readAllBytes(readFile.toPath());
           fos.write(data);
           fos.close();
           fileReader.close();
