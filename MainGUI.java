@@ -35,6 +35,11 @@ public class MainGUI extends JFrame implements ActionListener{
   MainGUI(ExcelManager EM){
     super("Biblioteca Pessoal");
     this.setLayout(new GridLayout(2, 1));
+    this.setSize(1280, 720);	//Tamanho da janela
+		//this.setTitle("Biblioteca Pessoal");	//Nome da janela
+		this.setLocationRelativeTo(null);	//Abrir centralizada
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//Finalizar quando sair
+		this.setVisible(true);	//Fazer a janela aparecer
     
     this.Excel = EM;
     this.books = EM.obtainBookBlock(this.page);
@@ -112,6 +117,15 @@ public class MainGUI extends JFrame implements ActionListener{
     this.setJMenuBar(menu);
     this.add(top);
     this.add(sp);
+
+    JPanel panelButtons = new JPanel();
+		JButton prior = new JButton("<");
+		JButton next = new JButton(">");
+    
+		panelButtons.add(prior);
+		panelButtons.add(next);
+    
+		this.add(panelButtons, BorderLayout.SOUTH);
   }
   
   @Override
