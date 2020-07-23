@@ -97,10 +97,10 @@ public class MainGUI extends JFrame implements ActionListener{
     JPanel bottom = new JPanel();
     JScrollPane sp = new JScrollPane(bottom, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-    bottom.setLayout(new GridLayout(0,1));
+    bottom.setLayout(new GridLayout(0, 1, 0, 0));
     bottom.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 300));
     
-    bottom.add(new BookTile(new Book("Harry Potter", "JK Rowling", "Editora Panini", "A história de dois aventureiros, o tigre Evan e a raposa Amélia, no início de sua jornada mundo afora em busca do lar perfeito.", book_t.FISICO, 2, true, false), 15, bottom.getWidth()));
+    bottom.add(new BookTile(new Book("Harry Potter", "JK Rowling", "Editora Panini", "A história de dois aventureiros, o tigre Evan e a raposa Amélia, no início de sua jornada mundo afora em busca do lar perfeito.", book_t.FISICO, 2, true, false), 5, bottom.getWidth()));
     // Iterator<Book> it = this.books.iterator();
     // while(it.hasNext()){
       //   bottom.add(new BookTile(it.next()));
@@ -164,7 +164,7 @@ public class MainGUI extends JFrame implements ActionListener{
   }
 
   public void render(){
-    this.setSize(1000, 800);
+    this.setSize(1200, 1000);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setVisible(true);
   }

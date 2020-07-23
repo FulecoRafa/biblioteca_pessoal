@@ -36,6 +36,8 @@ public class BookForm extends JDialog implements ActionListener, ChangeListener{
   private int bookGrade = 2;
   private boolean bookRead = false;
   private boolean bookBought = false;
+  private JCheckBox boughtBox;
+  private JCheckBox readBox;
 
   public BookForm(String message) {
     this.setLayout(new BorderLayout());
@@ -87,12 +89,12 @@ public class BookForm extends JDialog implements ActionListener, ChangeListener{
 
     // Check boxes
     JPanel checks = new JPanel();
-    JCheckBox readBox = new JCheckBox(this.labels[i++]);
-    readBox.addActionListener(this);
-    readBox.setActionCommand("checkRead");
-    JCheckBox boughtBox = new JCheckBox(this.labels[i++]);
-    boughtBox.addActionListener(this);
-    boughtBox.setActionCommand("checkBought");
+    this.readBox = new JCheckBox(this.labels[i++]);
+    this.readBox.addActionListener(this);
+    this.readBox.setActionCommand("checkRead");
+    this.boughtBox = new JCheckBox(this.labels[i++]);
+    this.boughtBox.addActionListener(this);
+    this.boughtBox.setActionCommand("checkBought");
     checks.add(readBox);
     checks.add(boughtBox);
     top.add(checks);
@@ -137,6 +139,20 @@ public class BookForm extends JDialog implements ActionListener, ChangeListener{
 
   public Book getBook(){
     return referBook;
+  }
+
+  public void setBook(Book b){
+    referBook = b;
+    fields[0].setText(b.name);
+    fields[1].setText(b.author);
+    fields[2].setText(b.publish);
+    ActionEvent e = new ActionEvent(this.type, 200, b.type.toString());
+    actionPerformed(e);
+    this.bookBought = b.bought;
+    this.boughtBox.setSelected(b.bought);
+    this.bookRead = b.read;
+    this.readBox.setSelected(b.read);
+    this.description.setText(b.description);
   }
 
   @Override
