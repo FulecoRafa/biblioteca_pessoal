@@ -1,3 +1,4 @@
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -5,6 +6,7 @@ import javax.swing.JPanel;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
@@ -19,9 +21,11 @@ public class BookTile extends JPanel implements ActionListener {
   public BookTile(Book b, int h, int w) {
     this.book = b;
     this.setLayout(new GridLayout(3, 2));
-    w+=10;
+    w+=20;
     this.setPreferredSize(new Dimension(w, h));
     System.out.println("H: " + h + " W: " + w);
+
+    this.setBorder(BorderFactory.createLineBorder(Color.black));
 
     JPanel bookInfo = new JPanel();
     bookInfo.setLayout(new GridLayout(6, 3));
