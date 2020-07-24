@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.Vector;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
@@ -38,7 +39,7 @@ public class MainGUI extends JFrame implements ActionListener{
 
   MainGUI(ExcelManager EM){
     super("Biblioteca Pessoal");
-    this.setLayout(new GridLayout(2, 1));
+    this.setLayout(new GridLayout(3, 1));
     this.setSize(1280, 720);	//Tamanho da janela
     //this.setTitle("Biblioteca Pessoal");	//Nome da janela
     this.setLocationRelativeTo(null);	//Abrir centralizada
