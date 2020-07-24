@@ -65,7 +65,7 @@ public class ExcelManager {
 		//	Unknown numRows before first run through
 		numRows = 0;
 		numCells = 9;
-		pageSize = 3;
+		pageSize = 10;
 		
 	}
 	

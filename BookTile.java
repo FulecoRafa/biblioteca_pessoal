@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,23 +17,24 @@ import java.util.Vector;
 public class BookTile extends JPanel implements ActionListener {
 
   private Book book;
-  private ExcelManager em;
+  private MainGUI mg;
   private int index;
 
   // Registers book to be shown in tile
-  public BookTile(Book b, ExcelManager em, int h, int w, int index) {
+  public BookTile(Book b, MainGUI mg, int h, int w, int index) {
     this.book = b;
-    this.em = em;
+    this.mg = mg;
     this.index = index;
-    this.setLayout(new GridLayout(3, 2));
+    this.setLayout(new BorderLayout());
     w+=20;
+    h+=200;
     this.setPreferredSize(new Dimension(w, h));
     System.out.println("H: " + h + " W: " + w);
 
     this.setBorder(BorderFactory.createLineBorder(Color.black));
 
     JPanel bookInfo = new JPanel();
-    bookInfo.setLayout(new GridLayout(6, 3));
+    bookInfo.setLayout(new GridLayout(3, 2));
 
     String eachInfo[] = book.toString().split("\\r?\\n");
     Vector<String> allInfo = new Vector<String>();
@@ -76,8 +78,8 @@ public class BookTile extends JPanel implements ActionListener {
     buttons.add(editButton);
     buttons.add(eraseButton);
 
-    this.add(bookInfo);
-    this.add(buttons);
+    this.add(bookInfo, BorderLayout.CENTER);
+    this.add(buttons, BorderLayout.PAGE_END);
   }
 
   @Override
@@ -86,13 +88,15 @@ public class BookTile extends JPanel implements ActionListener {
       int input = JOptionPane.showConfirmDialog(null, "Todas as informações do livro serão deletadas definitivamente, tem certeza que deseja continuar?", "Deletar livro", JOptionPane.YES_NO_OPTION);
       if(input != 0)return;
       System.out.println("Deletando");
-      em.doDelete(this.index);
+      mg.Excel.doDelete(this.index);
+      mg.rerender();
     }else if("edit".equals(e.getActionCommand())){
       BookForm bf = new BookForm("Editar livro");
       bf.setBook(book);
       bf.render();
       Book updatedBook = bf.getBook();
-      em.callBack(updatedBook, index);
+      mg.Excel.callBack(updatedBook, index);
+      mg.rerender();
     }
 
   }

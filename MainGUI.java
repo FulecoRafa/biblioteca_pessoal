@@ -17,10 +17,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.Vector;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.BorderLayout;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -28,7 +30,7 @@ import java.awt.event.WindowEvent;
 // Sets main menu GUI
 public class MainGUI extends JFrame implements ActionListener{
 
-  private ExcelManager Excel;
+  public ExcelManager Excel;
   private Vector<Book> books;
   private JTextField searchBar;
   private JPanel bottom;
@@ -105,16 +107,15 @@ public class MainGUI extends JFrame implements ActionListener{
     // Bottom items
     this.bottom = new JPanel();
     JScrollPane sp = new JScrollPane(bottom, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    sp.getVerticalScrollBar().setUnitIncrement(16);
 
     this.bottom.setLayout(new GridLayout(0, 1, 0, 0));
     this.bottom.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
     
-    this.bottom.add(new BookTile(new Book("Harry Potter", "JK Rowling", "Editora Panini", "A história de dois aventureiros, o tigre Evan e a raposa Amélia, no início de sua jornada mundo afora em busca do lar perfeito.", book_t.FISICO, 2, true, false), EM, 5, bottom.getWidth(), 1));
-    // Iterator<Book> it = this.books.iterator();
-    // int i = 1;
-    // while(it.hasNext()){
-    //   this.bottom.add(new BookTile(it.next(), EM, 5, bottom.getWidth(), i++));
-    // }
+    // this.bottom.add(new BookTile(new Book("Harry Potter", "JK Rowling", "Editora Panini", "A história de dois aventureiros, o tigre Evan e a raposa Amélia, no início de sua jornada mundo afora em busca do lar perfeito.", book_t.FISICO, 2, true, false), EM, 5, bottom.getWidth(), 1));
+    
+    this.updateBooksByPage(this.page);
+    this.renderBooks();
       
     this.bottom.setAlignmentY(java.awt.Component.CENTER_ALIGNMENT);
 
@@ -124,8 +125,14 @@ public class MainGUI extends JFrame implements ActionListener{
     this.add(sp);
 
     JPanel panelButtons = new JPanel();
+
     JButton prior = new JButton("<");
+    prior.addActionListener(this);
+    prior.setActionCommand("prior");
+
     JButton next = new JButton(">");
+    next.addActionListener(this);
+    next.setActionCommand("next");
     
     panelButtons.add(prior);
     panelButtons.add(next);
@@ -135,6 +142,8 @@ public class MainGUI extends JFrame implements ActionListener{
   
   @Override
   public void actionPerformed(ActionEvent e) {
+    System.out.println("Action!");
+    System.out.println(e.getActionCommand());
     if("close".equals(e.getActionCommand())){
       this.Excel.shutDown();
       System.exit(0);
@@ -145,6 +154,7 @@ public class MainGUI extends JFrame implements ActionListener{
       System.out.println("Vec created");
       vec.add(bf.getBook());
       Excel.insertBooks(vec);
+      this.rerender();
     }else if("exportXLSX".equals(e.getActionCommand())){
 
       Excel.shutDown();
@@ -181,8 +191,26 @@ public class MainGUI extends JFrame implements ActionListener{
 
       Excel = new ExcelManager();
     }else if("search".equals(e.getActionCommand())){
-      Excel.research(this.searchBar.getText(), 0);
+
+      this.books = Excel.research(this.searchBar.getText(), 0);
+      this.page = 0;
+      this.renderBooks();
+
+    }else if("prior".equals(e.getActionCommand())){
+
+      if(this.page-1 < 0) this.page = 1;
+      this.updateBooksByPage(this.page-1);
+      this.renderBooks();
+      
+
+    }else if("next".equals(e.getActionCommand())){
+
+      System.out.println("Getting next page");
+      this.updateBooksByPage(this.page+1);
+      this.renderBooks();
+
     }else{
+
       System.out.println("Listened to: " + e.getActionCommand());
     }
 
@@ -192,6 +220,27 @@ public class MainGUI extends JFrame implements ActionListener{
     this.setSize(1200, 1000);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setVisible(true);
+  }
+
+  public void rerender(){
+    this.updateBooksByPage(this.page);
+    this.renderBooks();
+  }
+
+  private void renderBooks(){
+    System.out.println("==================================\n"+
+                      "Rendering books\n"+
+                      "===================================");
+    this.bottom.removeAll();
+    Iterator<Book> it = this.books.iterator();
+    int i = 1;
+    while(it.hasNext()){
+      Book thisBook = it.next();
+      System.out.println(thisBook);
+      this.bottom.add(new BookTile(thisBook, this, 5, 500, i++));
+    }
+    revalidate();
+    repaint();
   }
 
   private void updateBooksByPage(int page){
